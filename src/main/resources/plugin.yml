@@ -1,0 +1,16 @@
+name: Wandoria-PlayerInfo
+version: '${version}'
+main: de.wandoria.playerinfo.Wandoria_PlayerInfo
+api-version: '1.19'
+softdepend:
+    - HuskSync
+
+commands:
+    playerinfo:
+        description: PlayerInfo Command
+        usage: /<command> [player]
+        aliases: [pi]
+    test:
+        description: Test Command
+        usage: /<command>
+        aliases: [t]
