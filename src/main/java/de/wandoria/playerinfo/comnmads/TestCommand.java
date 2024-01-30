@@ -17,7 +17,6 @@ public class TestCommand implements org.bukkit.command.CommandExecutor, org.bukk
         Player p = (Player) commandSender;
 
         User user = new User(p.getUniqueId(), "banner", null, null);
-        user.loadInventory();
 
         p.openInventory(user.getInventory());
 

@@ -3,17 +3,15 @@ package de.wandoria.playerinfo.utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.kyori.adventure.text.Component;
 import net.william278.husksync.api.BukkitHuskSyncAPI;
 import net.william278.husksync.api.HuskSyncAPI;
-import net.william278.husksync.data.BukkitData;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,7 +21,7 @@ import java.util.UUID;
 public class User {
 
     private final HuskSyncAPI huskAPI = BukkitHuskSyncAPI.getInstance();
-    public final HashMap<UUID, UUID> target = new HashMap<>();
+    private static HashMap<UUID, UUID> target = new HashMap<>();
     UUID uuid;
     String banner;
 
@@ -31,27 +29,8 @@ public class User {
     Inventory enderchst;
 
     // Getter
-    public ItemStack getHelmet( ) {
-        return ((PlayerInventory) inventory).getHelmet();
-    }
-
-    public ItemStack getChestplate () {
-        return ((PlayerInventory) inventory).getChestplate();
-    }
-
-    public ItemStack getLeggings () {
-        return ((PlayerInventory) inventory).getLeggings();
-    }
-
-    public ItemStack getBoots () {
-        return ((PlayerInventory) inventory).getBoots();
-    }
-
-    public ItemStack getOffhand () {
-        return ((PlayerInventory) inventory).getItemInOffHand();
-    }
-    public Player getTargetPlayer() {
-        return Bukkit.getPlayer(target.get(this.uuid));
+    public OfflinePlayer getTargetPlayer() {
+        return Bukkit.getOfflinePlayer(target.get(this.uuid));
     }
 
     // Setter
@@ -64,48 +43,54 @@ public class User {
         target.remove(this.uuid);
     }
 
-
     // Methods
-    public void loadInventory() {
+    public boolean bannerExistsInDatabase (){
+        MySQL mysql = new MySQL(null, null, null, null, null);
 
-        Player target = Bukkit.getPlayer(this.uuid);
+        try {
+            ResultSet rs = mysql.query("SELECT * FROM playerbanner WHERE uuid=" + this.uuid + "'");
 
-        if (target != null) {
-            this.inventory = target.getInventory();
-        } else {
-            if (inventory == null) {
-                inventory = Bukkit.createInventory(null, 4 * 9);
+            if (rs.next()) {
+                return true;
+            } else {
+                return false;
             }
-            // Asynchronous
-            huskAPI.getUser(getUuid()).thenAccept((oUser) -> {
-                var snapshot = huskAPI.getLatestSnapshot(oUser.orElseThrow()).join().orElseThrow();
-                var inv = ((BukkitData.Items.Inventory) snapshot.getInventory().orElseThrow());
-                var isArray = inv.getContents(); // Den Inhalt des theoretischen Inventars
-                inventory.setContents(isArray);
-            });
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void loadEnderchest() {
+    public void loadBanner() {
 
-        Player target = Bukkit.getPlayer(this.uuid);
+        if (bannerExistsInDatabase()) {
+            Player player = Bukkit.getPlayer(this.uuid);
 
-        if (target != null) {
-            this.enderchst = target.getEnderChest();
-        } else {
-            if (enderchst == null) {
-                enderchst = Bukkit.createInventory(null, InventoryType.ENDER_CHEST, Component.text(""));
+            MySQL mySQL = new MySQL(null, null, null, null, null);
+
+            ResultSet rs = mySQL.query("SELECT * FROM playerbanner WHERE uuid='" + this.uuid + "'");
+
+            try {
+                rs.next();
+
+                this.banner = rs.getString("banner");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-            // Asynchronous
-            huskAPI.getUser(getUuid()).thenAccept((oUser) -> {
-                var snapshot = huskAPI.getLatestSnapshot(oUser.orElseThrow()).join().orElseThrow();
-                var inv = ((BukkitData.Items.EnderChest) snapshot.getEnderChest().orElseThrow());
-                var isArray = inv.getContents(); // Den Inhalt des theoretischen Inventars
-                enderchst.setContents(isArray);
-            });
+        } else return;
+    }
 
+    public void saveBanner() {
+
+        if (bannerExistsInDatabase()) {
+            MySQL mySQL = new MySQL(null, null, null, null, null);
+
+            mySQL.update("UPDATE `playerbanner` SET `banner` = '" + this.banner + "' WHERE `uuid` = '" + this.uuid + "'");
+        } else {
+            MySQL mySQL = new MySQL(null, null, null, null, null);
+
+            mySQL.update("INSERT INTO `playerbanner` (`uuid`, `banner`) VALUES ('" + this.uuid + "', '" + this.banner + "')");
         }
-
     }
 
 }
