@@ -1,6 +1,7 @@
 package de.wandoria.playerinfo.comnmads;
 
 import de.wandoria.playerinfo.utils.PlayerInfoInventory;
+import de.wandoria.playerinfo.utils.User;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,6 +35,10 @@ public class PlayerInfoCommand implements org.bukkit.command.CommandExecutor, or
                 playerInfoInventory.loadDatafromAPI();
                 p.sendMessage(mm.deserialize("<gray>[<blue>Wandoria<gray>] Die PlayerInfo von <green>" + args[0] + " <gray>wurde <green>geöffnet<gray>!"));
                 p.openInventory(playerInfoInventory.generateInventory());
+
+                User user = new User(p.getUniqueId(), "banner", null, null);
+                user.setTarget(target.getUniqueId());
+
                 return true;
 
             }

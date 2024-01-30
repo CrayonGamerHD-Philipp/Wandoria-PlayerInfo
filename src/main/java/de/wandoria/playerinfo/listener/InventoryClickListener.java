@@ -26,7 +26,7 @@ public class InventoryClickListener implements Listener {
                     if (e.getCurrentItem().getItemMeta().hasDisplayName() && e.getCurrentItem().getItemMeta().getDisplayName().contains("Inventar")){
                         p.closeInventory();
 
-                        PlayerInfoInventory playerInfoInventory = new PlayerInfoInventory("Hallo", p, null, null, null, null, null, null, null, 0);
+                        PlayerInfoInventory playerInfoInventory = new PlayerInfoInventory("Hallo", e.getInventory()., null, null, null, null, null, null, null, 0);
                         p.openInventory(playerInfoInventory.generateSelectInventory());
 
                     }
@@ -42,22 +42,28 @@ public class InventoryClickListener implements Listener {
                         p.closeInventory();
 
                         User user = new User(p.getUniqueId(), "banner", null, null);
-                        user.loadInventory();
-                        p.openInventory(user.getInventory());
+
+                        User target = new User(user.getTargetPlayer().getUniqueId(), "banner", null, null);
+                        target.loadEnderchest();
+                        p.openInventory(target.getEnderchst());
 
                     } else if (e.getCurrentItem().getItemMeta().hasDisplayName() && e.getCurrentItem().getItemMeta().getDisplayName().contains("Enderchest")){
                         p.closeInventory();
 
                         User user = new User(p.getUniqueId(), "banner", null, null);
-                        user.loadEnderchest();
-                        p.openInventory(user.getEnderchst());
+
+                        User target = new User(user.getTargetPlayer().getUniqueId(), "banner", null, null);
+                        target.loadEnderchest();
+                        p.openInventory(target.getEnderchst());
 
                     }
                 }
             }
         } else if (e.getView().getTitle().equalsIgnoreCase("Player") || e.getView().getTitle().equalsIgnoreCase("Ender Chest")){
 
-            e.setCancelled(true);
+            if (!p.hasPermission("wandoria.test2")) {
+                e.setCancelled(true);
+            }
 
         }
 

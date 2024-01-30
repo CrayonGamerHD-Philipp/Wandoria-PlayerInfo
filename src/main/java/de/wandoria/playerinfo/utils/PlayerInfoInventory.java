@@ -144,34 +144,18 @@ public class PlayerInfoInventory {
     }
 
     public Inventory generateInventory() {
-        Inventory inventory = Bukkit.createInventory(null, 54, getBanner());
+        Inventory inventory = Bukkit.createInventory(getTargetplayer(), 54, getBanner());
 
-        ItemStack inventoryItem = new ItemStack(Material.getMaterial(config.getString("inventory.type")));
-        ItemMeta inventoryItemMeta = inventoryItem.getItemMeta();
-        inventoryItemMeta.displayName(mm.deserialize("<gray>Inventar"));
-        inventoryItemMeta.setCustomModelData(config.getInt("inventory.custommodeldata"));
-        inventoryItem.setItemMeta(inventoryItemMeta);
+        ItemStack inventoryItem = new ItemBuilder(Material.getMaterial(config.getString("inventory.type")), 1).setDisplayName(mm.deserialize("<gray>Inventar")).setCustomModelData(config.getInt("inventory.custommodeldata")).toItemStack();
         inventory.setItem(config.getInt("inventory.slot"), inventoryItem);
 
-        ItemStack levelItem = new ItemStack(Material.getMaterial(config.getString("level.type")));
-        ItemMeta levelItemMeta = levelItem.getItemMeta();
-        levelItemMeta.displayName(mm.deserialize("<gray>Level: " + getLevel()));
-        levelItemMeta.setCustomModelData(config.getInt("level.custommodeldata"));
-        levelItem.setItemMeta(levelItemMeta);
+        ItemStack levelItem = new ItemBuilder(Material.getMaterial(config.getString("level.type")), 1).setDisplayName(mm.deserialize("<gray>Level: " + getLevel())).setCustomModelData(config.getInt("level.custommodeldata")).toItemStack();
         inventory.setItem(config.getInt("level.slot"), levelItem);
 
-        ItemStack moneyItem = new ItemStack(Material.getMaterial(config.getString("money.type")));
-        ItemMeta moneyItemMeta = moneyItem.getItemMeta();
-        moneyItemMeta.displayName(mm.deserialize("<gray>Money: " + getMoney()));
-        moneyItemMeta.setCustomModelData(config.getInt("money.custommodeldata"));
-        moneyItem.setItemMeta(moneyItemMeta);
+        ItemStack moneyItem = new ItemBuilder(Material.getMaterial(config.getString("money.type")), 1).setDisplayName(mm.deserialize("<gray>Money: " + getMoney())).setCustomModelData(config.getInt("money.custommodeldata")).toItemStack();
         inventory.setItem(config.getInt("money.slot"), moneyItem);
 
-        ItemStack onlinetimeItem = new ItemStack(Material.getMaterial(config.getString("onlinetime.type")));
-        ItemMeta onlinetimeItemMeta = onlinetimeItem.getItemMeta();
-        onlinetimeItemMeta.displayName(mm.deserialize("<red>Nicht verfügbar!"));
-        onlinetimeItemMeta.setCustomModelData(config.getInt("onlinetime.custommodeldata"));
-        onlinetimeItem.setItemMeta(onlinetimeItemMeta);
+        ItemStack onlinetimeItem = new ItemBuilder(Material.getMaterial(config.getString("onlinetime.type")), 1).setDisplayName(mm.deserialize("<red>Nicht verfügbar!")).setCustomModelData(config.getInt("onlinetime.custommodeldata")).toItemStack();
         inventory.setItem(config.getInt("onlinetime.slot"), onlinetimeItem);
 
         ItemStack friendsItem = new ItemStack(Material.getMaterial(config.getString("friends.type")));
@@ -228,15 +212,13 @@ public class PlayerInfoInventory {
             inventory.setItem(inventory.firstEmpty(), filler);
         }
 
-
-
         return inventory;
 
     }
 
 
     public Inventory generateSelectInventory() {
-        Inventory inventory = Bukkit.createInventory(null, 3*9, "Wähle eine Kategorie aus!");
+        Inventory inventory = Bukkit.createInventory(getTargetplayer(), 3*9, "Wähle eine Kategorie aus!");
 
         ItemStack enderchestItem = new ItemStack(Material.ENDER_CHEST);
         ItemMeta enderchestItemMeta = enderchestItem.getItemMeta();
